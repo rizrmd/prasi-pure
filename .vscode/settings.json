@@ -1,0 +1,24 @@
+{
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    ".gitignore": true,
+    "node_modules": true,
+    "bun.lockb": true,
+    "index.ts": true,
+    ".vscode": true,
+    "app/web/public-br": true
+  },
+  "hide-files.files": [
+    ".gitignore",
+    "node_modules",
+    "bun.lockb",
+    "index.ts",
+    ".vscode",
+    "app/web/public-br"
+  ]
+}

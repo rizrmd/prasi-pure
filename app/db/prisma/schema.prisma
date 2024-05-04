@@ -1,0 +1,166 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model component {
+  id                 String           @id(map: "component_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name               String
+  content_tree       Json
+  created_at         DateTime?        @default(now()) @db.Timestamp(6)
+  updated_at         DateTime?        @default(now()) @db.Timestamp(6)
+  type               String           @default("item")
+  id_component_group String?          @db.Uuid
+  props              Json             @default("[]")
+  component_group    component_group? @relation(fields: [id_component_group], references: [id], onDelete: Cascade)
+}
+
+model component_group {
+  id             String           @id(map: "site_comp_group_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  shared         Boolean          @default(false)
+  component      component[]
+  component_site component_site[]
+}
+
+model component_site {
+  id_component_group String          @db.Uuid
+  id_site            String          @db.Uuid
+  is_owner           Boolean         @default(true)
+  component_group    component_group @relation(fields: [id_component_group], references: [id], onDelete: Cascade)
+  site               site            @relation(fields: [id_site], references: [id], onDelete: Cascade)
+
+  @@id([id_component_group, id_site], map: "component_site_id_component_group_id_site")
+}
+
+model npm_page {
+  id        BigInt  @id @default(autoincrement())
+  id_page   String  @db.Uuid
+  module    String
+  version   String
+  types     Boolean @default(false)
+  bundled   Boolean @default(false)
+  import_as Json    @default("{\"main\": {\"mode\": \"default\", \"name\": \"\"}, \"names\": []}")
+}
+
+model npm_site {
+  id        BigInt  @id @default(autoincrement())
+  id_site   String  @db.Uuid
+  module    String
+  version   String
+  types     Boolean @default(false)
+  bundled   Boolean @default(false)
+  import_as Json    @default("{\"main\": {\"mode\": \"default\", \"name\": \"\"}, \"names\": []}")
+  site      site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model org {
+  id         String     @id(map: "organization_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String
+  created_at DateTime?  @default(now()) @db.Timestamp(6)
+  updated_at DateTime?  @db.Timestamp(6)
+  created_by String?    @db.Uuid
+  user       user?      @relation(fields: [created_by], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "organization_user_created_fkey")
+  org_user   org_user[]
+  site       site[]
+}
+
+model org_user {
+  id      Int    @id @default(autoincrement())
+  id_org  String @db.Uuid
+  id_user String @db.Uuid
+  role    String @default("member")
+  org     org    @relation(fields: [id_org], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  user    user   @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model page {
+  id                String         @id(map: "page_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name              String
+  url               String
+  content_tree      Json
+  id_site           String         @db.Uuid
+  created_at        DateTime?      @default(now()) @db.Timestamp(6)
+  js_compiled       String?
+  js                String?
+  updated_at        DateTime?      @default(now()) @db.Timestamp(6)
+  id_folder         String?        @db.Uuid
+  is_deleted        Boolean        @default(false)
+  id_layout         String?        @db.Uuid
+  is_default_layout Boolean        @default(false)
+  page_folder       page_folder?   @relation(fields: [id_folder], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  page              page?          @relation("pageTopage", fields: [id_layout], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  other_page        page[]         @relation("pageTopage")
+  site              site           @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  page_history      page_history[]
+}
+
+model page_folder {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String?
+  parent_id  String? @db.Uuid
+  id_site    String  @db.Uuid
+  is_deleted Boolean @default(false)
+  page       page[]
+  site       site    @relation(fields: [id_site], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model page_history {
+  id           String @id(map: "page_history_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id_page      String @db.Uuid
+  content_tree Bytes
+  ts           String
+  page         page   @relation(fields: [id_page], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model site {
+  id             String           @id(map: "site_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  favicon        String
+  domain         String           @unique(map: "site_domain")
+  id_user        String           @db.Uuid
+  created_at     DateTime?        @default(now()) @db.Timestamp(6)
+  id_org         String?          @db.Uuid
+  updated_at     DateTime?        @default(now()) @db.Timestamp(6)
+  js             String?          @default("")
+  css            String?          @default("")
+  js_compiled    String?          @default("")
+  config         Json             @default("{}")
+  is_deleted     Boolean          @default(false)
+  responsive     String           @default("all")
+  npm_cache      String           @default(" ") @db.VarChar
+  code_mode      String           @default("old") @db.VarChar(5)
+  component_site component_site[]
+  npm_site       npm_site[]
+  page           page[]
+  page_folder    page_folder[]
+  org            org?             @relation(fields: [id_org], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "site_id_organization_fkey")
+  user           user             @relation(fields: [id_user], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model site_use_comp {
+  id_site     String @db.Uuid
+  use_id_site String @db.Uuid
+
+  @@id([id_site, use_id_site])
+}
+
+model user {
+  id                           String     @id(map: "user_id") @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  username                     String     @unique(map: "user_username")
+  password                     String
+  phone                        String
+  email                        String
+  created_at                   DateTime?  @default(now()) @db.Timestamp(6)
+  token_reset_password         String?
+  token_reset_password_expired DateTime?  @db.Timestamp(6)
+  updated_at                   DateTime?  @default(now()) @db.Timestamp(6)
+  nominal_deposit              Decimal    @default(0) @db.Decimal(18, 3)
+  org                          org[]
+  org_user                     org_user[]
+  site                         site[]
+}

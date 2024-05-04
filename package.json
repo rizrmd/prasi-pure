@@ -1,0 +1,18 @@
+{
+  "name": "prasi-pure",
+  "private": true,
+  "workspaces": [
+    "app/*",
+    "pkgs/*"
+  ],
+  "scripts": {
+    "dev": "bun run --hot pkgs/core/start.ts",
+    "purge": "rm -rf node_modules && rm bun.lockb",
+    "db": "cd app/db && bun prisma db pull && bun prisma generate",
+    "prep": "bun run pkgs/core/bundler/prep.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "^1.1.1"
+  },
+  "dependencies": {}
+}

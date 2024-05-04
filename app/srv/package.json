@@ -1,0 +1,6 @@
+{
+  "name": "srv",
+  "dependencies": {
+    "json-joy": "^15.11.0"
+  }
+}

@@ -3,10 +3,22 @@ import { context } from "esbuild";
 import { dir } from "utils";
 import { g } from "../global/declare";
 import { send } from "../server/ws";
+import { watch } from "node:fs";
 
 export const bundle = async () => {
   if (!g.bundler) {
-    g.bundler = { ts: { web: Date.now() } };
+    g.bundler = {
+      web: {
+        ts: Date.now(),
+        watch: watch(
+          dir.path("app/web/src"),
+          { recursive: true },
+          (event, filename) => {
+            g.bundler.web.ctx?.rebuild();
+          }
+        ),
+      },
+    };
   } else {
     return;
   }
@@ -19,7 +31,7 @@ export const bundle = async () => {
     await g.bundler.tailwind;
   })();
 
-  g.bundler.web = await context({
+  g.bundler.web.ctx = await context({
     entryPoints: [dir.path("app/web/src/index.tsx")],
     outdir: dir.data("build/web"),
     treeShaking: true,
@@ -33,17 +45,17 @@ export const bundle = async () => {
         name: "prasi",
         setup(build) {
           build.onStart(() => {
-            g.bundler.ts.web = Date.now();
+            g.bundler.web.ts = Date.now();
           });
           build.onEnd(() => {
-            g.log.info(`Web Built ${Date.now() - g.bundler.ts.web}ms`);
+            g.log.info(`Web Built <${Date.now() - g.bundler.web.ts}>ms`);
             g.client.all.forEach((ws) => {
-              send(ws, "event", {type: 'prasi-reload'});
+              send(ws, "event", { type: "prasi-reload" });
             });
           });
         },
       },
     ],
   });
-  await g.bundler.web.watch();
+  await g.bundler.web.ctx.rebuild();
 };

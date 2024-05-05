@@ -22,8 +22,8 @@ export const PCodePopup = () => {
         }
       }}
     >
-      <DialogContent className="p-w-[90%] p-h-[80%] p-p-1 p-bg-white">
-        <PCodeMenu />
+      <DialogContent className="p-w-[90%] p-h-[80%] p-bg-white">
+        <PCodeMenu /> 
       </DialogContent>
     </Dialog>
   );

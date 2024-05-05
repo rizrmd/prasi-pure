@@ -30,6 +30,9 @@
       "utils": [
         "./pkgs/core/bundler/utils/index.ts"
       ],
+      "api-ctx": [
+        "./pkgs/core/server/middleware/api"
+      ]
     },
   }
 }

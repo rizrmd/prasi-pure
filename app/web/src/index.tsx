@@ -1,8 +1,9 @@
 import { GlobalContext } from "@/lib/use-global";
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Base } from "./parts/base";
+import { Router } from "./parts/router";
 import { initWS } from "./ws/init";
+import { dbProxy } from "@/lib/db-client";
 
 document.body.innerHTML = '<div id="root"></div>';
 
@@ -11,6 +12,12 @@ const el = document.getElementById("root");
 
 if (el) {
   initWS();
+
+  const w = window as any;
+  const cur = new URL(w.basehost || location.href);
+  const base_url = `${cur.protocol}//${cur.host}`;
+  w._db = dbProxy(base_url);
+
   const root = createRoot(el);
   const Root = () => {
     const [, render] = useState({});
@@ -23,7 +30,7 @@ if (el) {
           },
         }}
       >
-        <Base />
+        <Router />
       </Provider>
     );
   };

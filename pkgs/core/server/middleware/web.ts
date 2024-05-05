@@ -2,7 +2,7 @@ import { dir } from "utils";
 import type { Middleware } from "./utils/types";
 import { compressedResponse } from "./utils/compressed-response";
 
-export const web: Middleware = async ({ req, url, ctx }) => {
+export const webMiddleware: Middleware = async ({ req, url, ctx }) => {
   const paths = [
     dir.data(`/build/web/${url.pathname}`),
     dir.path(`/app/web/public/${url.pathname}`),

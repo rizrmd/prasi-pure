@@ -1,29 +1,25 @@
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarTrigger,
-} from "@/components/ui/menubar";
-import { FileJson, Pickaxe } from "lucide-react";
+import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { FC } from "react";
 
 import { useUI } from "@/globals/ui";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
 
 export const PCodeMenu: FC<{ className?: string }> = ({ className }) => {
   const ui = useUI();
 
   return (
-    <Menubar className={className}>
+    <Menubar className={cn("p-rounded-t-lg")}>
       <MenubarMenu>
-        <MenubarTrigger
-          onClick={() => {
-            ui.code.popup = false;
-            ui.render();
-          }}
-        >
-          <Pickaxe />
+        <Label className="p-mr-2 p-cursor-pointer">
+          <Switch />
+          <span>Tailwind</span>
+        </Label>
+
+        <MenubarTrigger>
+          <div>Rebuild</div>
         </MenubarTrigger>
       </MenubarMenu>
     </Menubar>

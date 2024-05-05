@@ -13,6 +13,7 @@ export const initWS = () => {
       const blob = data as Blob;
       const msg = decoder.decode(new Uint8Array(await blob.arrayBuffer())) as {
         type: "event" | "reply";
+        reply_id?: string;
         content: any;
       };
       if (msg.type === "event") {
@@ -22,6 +23,10 @@ export const initWS = () => {
           event(ws, msg.content);
         }
       }
+    };
+    ws.onclose = () => {
+      reconnect++;
+      setTimeout(retry, 1000);
     };
   };
   retry();

@@ -1,4 +1,4 @@
-export type Context = { status?: number };
+export type Context = { status?: number; prasi: any };
 
 export type Middleware = (arg: {
   req: Request;

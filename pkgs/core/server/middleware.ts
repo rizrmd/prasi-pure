@@ -1,4 +1,4 @@
-import { api } from "./middleware/api";
-import { web } from "./middleware/web";
+import { apiMiddleware } from "./middleware/api";
+import { webMiddleware } from "./middleware/web";
 
-export const middlewares = [api, web];
+export const middlewares = [apiMiddleware, webMiddleware];

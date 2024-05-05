@@ -1,13 +1,15 @@
 import { g } from "../global/declare";
+import { initAPI } from "./api/api-init";
 import { middlewares } from "./middleware";
 import type { WSProp } from "./ws";
 
 export const create = () => {
+  initAPI();
   g.server = Bun.serve<WSProp>({
     port: 4550,
     async fetch(req, server) {
       const url = new URL(req.url);
-      const ctx = {};
+      const ctx = { prasi: {} };
 
       if (server.upgrade(req, { data: { url } })) {
         return undefined;

@@ -2,11 +2,12 @@
   "name": "core",
   "dependencies": {
     "@jsonjoy.com/json-pack": "^1.0.3",
+    "@swc/core": "^1.4.17",
     "brotli-wasm": "^3.0.0",
     "esbuild": "^0.20.2",
+    "fs-jetpack": "^5.1.0",
     "json-joy": "^15.11.0",
-    "pino": "^9.0.0",
-    "pino-pretty": "^11.0.0",
+    "radix3": "^1.1.2",
     "short-hash-ts": "^1.0.2"
   }
 }

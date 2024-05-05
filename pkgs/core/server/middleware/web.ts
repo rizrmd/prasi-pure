@@ -8,33 +8,20 @@ export const web: Middleware = async ({ req, url, ctx }) => {
     dir.path(`/app/web/public/${url.pathname}`),
   ];
   for (const path of paths) {
-    const file = Bun.file(path);
-    if (file) {
-      if (await file.exists()) {
-        return compressedResponse({
-          accept: req.headers.get("accept-encoding"),
-          content: {
-            path: url.pathname,
-            raw: await file.arrayBuffer(),
-          },
-          headers: {
-            "content-type": file.type,
-          },
-        });
-      }
+    const response = await compressedResponse({
+      accept: req.headers.get("accept-encoding"),
+      path,
+    });
+    if (response) {
+      return response;
     }
   }
 
-  return compressedResponse({
+  return await compressedResponse({
     accept: req.headers.get("accept-encoding"),
-    content: {
-      path: "index.html",
-      raw: Bun.file(dir.path("/app/web/public/index.html")),
-      br: Bun.file(dir.path("/app/web/public-br/index.html")),
-    },
+    path: dir.path("/app/web/public/index.html"),
     headers: {
       status: ctx.status || 200,
-      "content-type": "text/html",
     },
   });
 };

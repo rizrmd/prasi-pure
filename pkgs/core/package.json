@@ -1,8 +1,12 @@
 {
   "name": "core",
   "dependencies": {
+    "@jsonjoy.com/json-pack": "^1.0.3",
     "brotli-wasm": "^3.0.0",
+    "esbuild": "^0.20.2",
+    "json-joy": "^15.11.0",
     "pino": "^9.0.0",
-    "pino-pretty": "^11.0.0"
+    "pino-pretty": "^11.0.0",
+    "short-hash-ts": "^1.0.2"
   }
 }

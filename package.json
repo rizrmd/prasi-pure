@@ -6,7 +6,8 @@
     "pkgs/*"
   ],
   "scripts": {
-    "dev": "bun run --hot pkgs/core/start.ts",
+    "dev": "bun run pkgs/core/supervisor.ts",
+    "start": "bun run pkgs/core/supervisor.ts",
     "purge": "rm -rf node_modules && rm bun.lockb",
     "db": "cd app/db && bun prisma db pull && bun prisma generate",
     "prep": "bun run pkgs/core/bundler/prep.ts"

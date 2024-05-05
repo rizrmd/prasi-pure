@@ -1,6 +1,7 @@
 import { PrismaClient } from "db";
-import { g } from "./declare";
 import pino from "pino";
+import { g } from "./declare";
+import type { ServerWebSocket } from "bun";
 
 export const init = () => {
   if (!g.init) {
@@ -15,5 +16,7 @@ export const init = () => {
         },
       },
     });
+    g.client = { all: new Set<ServerWebSocket<unknown>>() };
+    g.cache = { web: {} };
   }
 };

@@ -2,6 +2,7 @@ import { gzipSync } from "bun";
 import brotli from "brotli-wasm";
 
 const br = await brotli;
+const encoder = new TextEncoder();
 export const compress = {
   gz: (
     data: ArrayBuffer | Uint8Array | string | Record<string, any>,
@@ -22,7 +23,13 @@ export const compress = {
       return Buffer.from(result).toString("base64");
     }
   },
-  br: (data: ArrayBuffer) => {
-    return br.compress(new Uint8Array(data));
+  br: (data: string | Uint8Array | ArrayBuffer) => {
+    if (data instanceof ArrayBuffer) {
+      return br.compress(new Uint8Array(data));
+    } else if (typeof data === "string") {
+      return br.compress(encoder.encode(data));
+    } else {
+      return br.compress(data);
+    }
   },
 };

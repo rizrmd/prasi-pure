@@ -11,11 +11,7 @@ export default {
 
     return (
       <div className="p-w-full p-h-full p-flex p-items-center p-justify-center">
-        <Loader2
-          className={cn(
-            "p-my-28 p-text-primary/60 p-animate-spin"
-          )}
-        />
+        <Loader2 className={cn("p-my-28 p-text-primary/60 p-animate-spin")} />
       </div>
     );
   },

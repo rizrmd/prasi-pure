@@ -47,5 +47,4 @@ export const prepareApiRoutes = async () => {
     }
   };
   await scan(dir.path(`app/srv/api`));
-  // await scan(dir.path(`pkgs/core/api`));
 };

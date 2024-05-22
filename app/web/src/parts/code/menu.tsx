@@ -1,11 +1,10 @@
 import { Menubar, MenubarMenu, MenubarTrigger } from "@/components/ui/menubar";
 import { FC } from "react";
 
-import { useUI } from "@/globals/ui";
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
-import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import { useUI } from "@/globals/ui";
+import { cn } from "@/lib/utils";
 
 export const PCodeMenu: FC<{ className?: string }> = ({ className }) => {
   const ui = useUI();

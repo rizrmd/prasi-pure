@@ -1,9 +1,9 @@
 import { $, Glob } from "bun";
 import { compress, dir } from "utils";
-import { init } from "../global/init";
+import { initGlobal } from "../global/init-global";
 import { g } from "../global/declare";
 
-init();
+initGlobal();
 
 const glob = new Glob("*");
 const root = dir.path("/app/web/public");

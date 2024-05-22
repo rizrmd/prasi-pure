@@ -1,4 +1,4 @@
-import type { Server, ServerWebSocket, ShellPromise } from "bun";
+import type { Server, ServerWebSocket, ShellPromise, Subprocess } from "bun";
 import type { PrismaClient } from "db";
 import type { BuildContext } from "esbuild";
 import type { FSWatcher } from "node:fs";
@@ -23,12 +23,18 @@ export const g = (global as any)._prasi_internal as unknown as {
   server: Server;
   api: {
     router: RadixRouter<SingleApi>;
+    files: Record<string, SingleApi>;
   };
   log: { info: (...str: any[]) => void; warn: (...str: any[]) => void };
   mode: "dev" | "prod";
   bundler: {
-    web: { ts: number; watch: FSWatcher; ctx?: BuildContext };
-    tailwind?: ShellPromise;
+    web: {
+      ts: number;
+      watch?: FSWatcher;
+      ctx?: BuildContext;
+      rebuild: () => Promise<any>;
+    };
+    tailwind?: { proc: Subprocess };
   };
   cache: {
     web: Record<
@@ -40,3 +46,9 @@ export const g = (global as any)._prasi_internal as unknown as {
     all: Set<ServerWebSocket<WSProp>>;
   };
 };
+
+type G = typeof g;
+
+declare global {
+  const log: G["log"];
+}

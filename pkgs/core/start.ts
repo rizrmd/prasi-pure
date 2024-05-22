@@ -1,9 +1,9 @@
 import { bundle } from "./bundler/init";
-import { hydrateCache } from "./global/hydrate-cache";
-import { init } from "./global/init";
+import { initCache } from "./global/init-cache";
+import { initGlobal } from "./global/init-global";
 import { create } from "./server/create";
 
-init();
-await hydrateCache();
+initGlobal();
+await initCache();
 await bundle();
 create();

@@ -38,14 +38,15 @@ export default {
       resolver: zodResolver(formSchema),
       defaultValues: {
         username: "",
+        password: ""
       },
     });
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
-      // Do something with the form values.
-      // ✅ This will be type-safe and validated.
-      console.log(values);
-      _db.user.findFirst({})
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+      const res = await _db.user.findFirst({
+        where: { username: values.username },
+      });
+      console.log(res);
     }
 
     return (
@@ -64,7 +65,7 @@ export default {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="shadcn" {...field} />
+                        <Input placeholder="username" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -79,9 +80,9 @@ export default {
                       <FormLabel>Password</FormLabel>
                       <FormControl>
                         <Input
-                          type="password"
-                          placeholder="shadcn"
                           {...field}
+                          placeholder="password"
+                          type="password"
                         />
                       </FormControl>
                       <FormMessage />

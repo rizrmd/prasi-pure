@@ -1,35 +1,63 @@
-import { $ } from "bun";
 import { context } from "esbuild";
+import { watch } from "node:fs";
 import { dir } from "utils";
 import { g } from "../global/declare";
 import { send } from "../server/ws";
-import { watch } from "node:fs";
+import { spawn } from "bun";
 
 export const bundle = async () => {
-  if (!g.bundler) {
-    g.bundler = {
-      web: {
-        ts: Date.now(),
-        watch: watch(
-          dir.path("app/web/src"),
-          { recursive: true },
-          (event, filename) => {
-            g.bundler.web.ctx?.rebuild();
-          }
-        ),
-      },
-    };
-  } else {
-    return;
+  if (g.bundler) {
+    g.bundler.web.watch?.close();
   }
-  g.bundler.tailwind =
-    $`bun tailwindcss -w -m -i src/index.css -o public/index.css`
-      .cwd(dir.path("app/web"))
-      .quiet();
+  g.bundler = {
+    web: {
+      ts: Date.now(),
+      watch: watch(
+        dir.path("app/web/src"),
+        { recursive: true },
+        (event, filename) => {
+          // console.log(event, filename);
+          g.bundler.web.rebuild();
+        }
+      ),
+      async rebuild() {},
+    },
+  };
 
-  (async () => {
-    await g.bundler.tailwind;
-  })();
+  if (g.bundler.tailwind) {
+    g.bundler.tailwind.proc.kill();
+    await g.bundler.tailwind.proc.exited;
+  }
+
+  g.bundler.tailwind = {
+    proc: spawn({
+      cmd: `bun tailwindcss -w -m -i src/index.css -o public/index.css`.split(
+        " "
+      ),
+      cwd: dir.path("app/web"),
+      stdio: ["ignore", "ignore", "ignore"],
+    }),
+  };
+
+  // TODO: use bun bundler, yg skrg sourcemapnya masih gagal
+  // g.bundler.web.rebuild = async () => {
+  //   g.bundler.web.ts = Date.now();
+  //   await Bun.build({
+  //     entrypoints: [dir.path("app/web/src/index.tsx")],
+  //     outdir: dir.data("build/web"),
+  //     minify: true,
+  //     splitting: true,
+  //     sourcemap: "external",
+  //     target: "browser",
+  //     format: "esm",
+  //   });
+
+  //   g.log.info(`Web Built <${Date.now() - g.bundler.web.ts}>ms`);
+  //   g.client.all.forEach((ws) => {
+  //     send(ws, "event", { type: "prasi-reload" });
+  //   });
+  // };
+  // await g.bundler.web.rebuild()
 
   g.bundler.web.ctx = await context({
     entryPoints: [dir.path("app/web/src/index.tsx")],
@@ -40,6 +68,9 @@ export const bundle = async () => {
     format: "esm",
     sourcemap: true,
     bundle: true,
+    define: {
+      "process.env.NODE_ENV": '"production"',
+    },
     plugins: [
       {
         name: "prasi",
@@ -57,5 +88,6 @@ export const bundle = async () => {
       },
     ],
   });
+  g.bundler.web.rebuild = g.bundler.web.ctx.rebuild;
   await g.bundler.web.ctx.rebuild();
 };

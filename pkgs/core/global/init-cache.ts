@@ -2,13 +2,14 @@ import { $, Glob } from "bun";
 import { g } from "./declare";
 import { compress, dir } from "utils";
 
-export const hydrateCache = async () => {
+export const initCache = async () => {
   const web = g.cache.web;
   const glob = new Glob("**/path");
   const root = dir.data("cache/web");
   let i = 0;
   await $`mkdir -p ${root}`;
   g.log.info("Initializing cache");
+
   for await (const fpath of glob.scan(root)) {
     const path = await Bun.file(root + "/" + fpath).text();
     const id = fpath.replaceAll("/path", "");
@@ -54,7 +55,5 @@ export const hydrateCache = async () => {
       i++;
     }
   }
-  g.log.info(`<${i}> files loaded`);
-
-  // g.log.info(`Cache Loaded ~> ${i} entrie${i > 1 ? "s" : ""}`);
+  if (i > 0) g.log.info(`<${i}> files loaded`);
 };

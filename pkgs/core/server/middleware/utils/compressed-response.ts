@@ -8,13 +8,16 @@ export const compressedResponse = async (arg: {
   accept: string | null;
   path: string;
   headers?: any;
+  checkExists?: boolean;
 }) => {
   const cache = g.cache.web;
   const { accept, path } = arg;
 
   const file = Bun.file(path);
 
-  if (file.type !== "application/octet-stream" && (await file.exists())) {
+  let isExists = arg.checkExists === false ? true : await file.exists();
+
+  if (file.type !== "application/octet-stream" && isExists) {
     let c = cache[path];
     const id = shorthash.unique(path);
     if (!cache[path]) {

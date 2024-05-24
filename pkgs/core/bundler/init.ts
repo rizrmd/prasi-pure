@@ -16,7 +16,6 @@ export const bundle = async () => {
         dir.path("app/web/src"),
         { recursive: true },
         (event, filename) => {
-          // console.log(event, filename);
           g.bundler.web.rebuild();
         }
       ),

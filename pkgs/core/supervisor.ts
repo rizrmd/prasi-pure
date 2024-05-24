@@ -6,7 +6,14 @@ const g = global as unknown as {
 
 while (true) {
   g.child = Bun.spawnSync({
-    cmd: ["bun", "run", "--hot", "--no-clear-screen", "pkgs/core/start.ts"],
+    cmd: [
+      "bun",
+      "run",
+      "--hot",
+      "--no-clear-screen",
+      "pkgs/core/start.ts",
+      ...process.argv,
+    ],
     stdio: ["inherit", "inherit", "inherit"],
   });
   console.log("Main process Exit Code:", g.child.exitCode, ", Restarting...");

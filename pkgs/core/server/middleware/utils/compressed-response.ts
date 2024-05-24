@@ -1,8 +1,8 @@
 import { $ } from "bun";
 import shorthash from "short-hash-ts";
-import { compress } from "../../../bundler/utils/compress";
 import { dir } from "../../../bundler/utils/dir";
 import { g } from "../../../global/declare";
+import { id2dir } from "../../../global/init-cache";
 
 export const compressedResponse = async (arg: {
   accept: string | null;
@@ -29,44 +29,37 @@ export const compressedResponse = async (arg: {
       delete c.br;
       c.modified = file.lastModified;
       try {
-        await $`rm -rf ${dir.data("cache/web/" + id)}`;
+        await $`rm -rf ${dir.data("cache/web/" + id2dir(id))}`;
       } catch (e) {}
     }
 
     if (!c.raw) {
       c.raw = new Uint8Array(await file.arrayBuffer());
-      Bun.write(dir.data("cache/web/" + id + "/path"), path);
+      Bun.write(dir.data("cache/web/" + id2dir(id) + "/path"), path);
       Bun.write(
-        dir.data("cache/web/" + id + "/ts"),
+        dir.data("cache/web/" + id2dir(id) + "/ts"),
         file.lastModified.toString()
       );
     }
 
     if (g.mode === "prod") {
-      if (!c.br) {
-        const br_path = dir.data("cache/web/" + id + "/br");
+      if (!c.br && accept?.includes("br")) {
+        const br_path = dir.data("cache/web/" + id2dir(id) + "/br");
         const br_file = Bun.file(br_path);
         if (await br_file.exists()) {
           c.br = new Uint8Array(await br_file.arrayBuffer());
         }
-
-        setTimeout(() => {
-          if (c.raw) {
-            c.br = compress.br(c.raw);
-            Bun.write(br_path, c.br);
-          }
-        }, 200);
       }
     }
 
     if (!c.gz) {
-      const gz_path = dir.data("cache/web/" + id + "/gz");
+      const gz_path = dir.data("cache/web/" + id2dir(id) + "/gz");
       const gz_file = Bun.file(gz_path);
       if (await gz_file.exists()) {
         c.gz = new Uint8Array(await gz_file.arrayBuffer());
       }
 
-      if (c.raw) {
+      if (c.raw && !c.gz) {
         c.gz = Bun.gzipSync(c.raw);
         Bun.write(gz_path, c.gz);
       }

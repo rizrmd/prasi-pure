@@ -4,6 +4,6 @@ import { initGlobal } from "./global/init-global";
 import { create } from "./server/create";
 
 await initGlobal();
-await initCache();
 await bundle();
+await initCache();
 create();

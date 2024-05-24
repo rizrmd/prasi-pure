@@ -7,7 +7,8 @@ import { dir } from "../bundler/utils/dir";
 
 export const initGlobal = async () => {
   g.init = true;
-  g.mode = "dev";
+  g.mode = process.argv[process.argv.length - 1] === "prod" ? "prod" : "dev";
+
   try {
     g.db = new PrismaClient();
   } catch (e) {
@@ -57,6 +58,8 @@ export const initGlobal = async () => {
       );
     },
   };
+  console.clear();
+  g.log.info("PRASI: " + (g.mode === "prod" ? "Production" : "Develepment"));
   g.client = { all: new Set<ServerWebSocket<WSProp>>() };
   g.cache = { web: {} };
 };

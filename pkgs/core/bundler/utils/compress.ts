@@ -1,7 +1,6 @@
 import { gzipSync } from "bun";
-import brotli from "brotli-wasm";
+import { brotliCompressSync } from "node:zlib";
 
-const br = await brotli;
 const encoder = new TextEncoder();
 export const compress = {
   gz: (
@@ -23,13 +22,28 @@ export const compress = {
       return Buffer.from(result).toString("base64");
     }
   },
-  br: (data: string | Uint8Array | ArrayBuffer) => {
-    if (data instanceof ArrayBuffer) {
-      return br.compress(new Uint8Array(data));
-    } else if (typeof data === "string") {
-      return br.compress(encoder.encode(data));
+  br: (
+    data: string | Uint8Array | ArrayBuffer,
+    opt?: { worker?: boolean; onDone?: (arg: Uint8Array) => void }
+  ) => {
+    if (opt?.worker) {
+      const workerURL = new URL("./compress-br-worker.ts", import.meta.url)
+        .href;
+      const worker = new Worker(workerURL);
+      worker.postMessage(data);
+      worker.onmessage = (event) => {
+        if (opt.onDone) {
+          opt.onDone(event.data);
+        }
+      };
     } else {
-      return br.compress(data);
+      if (data instanceof ArrayBuffer) {
+        return brotliCompressSync(new Uint8Array(data));
+      } else if (typeof data === "string") {
+        return brotliCompressSync(encoder.encode(data));
+      } else {
+        return brotliCompressSync(data);
+      }
     }
   },
 };

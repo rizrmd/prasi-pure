@@ -68,6 +68,7 @@ export const bundle = async () => {
     format: "esm",
     sourcemap: true,
     bundle: true,
+    logLevel: "error",
     define: {
       "process.env.NODE_ENV": '"production"',
     },

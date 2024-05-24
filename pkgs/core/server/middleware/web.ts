@@ -10,16 +10,9 @@ export const webMiddleware: Middleware = async ({ req, url, ctx }) => {
   for (const path of paths) {
     const file = Bun.file(path);
     if (await file.exists()) {
-      // const headers: Record<string, string> = {};
-      // if (path.endsWith(".js")) {
-      //   if (await Bun.file(path + ".map").exists()) {
-      //     headers["SourceMap"] = url.pathname + ".map";
-      //   }
-      // }  
       const response = await compressedResponse({
         accept: req.headers.get("accept-encoding"),
         path,
-        // headers,
         checkExists: false,
       });
       if (response) {

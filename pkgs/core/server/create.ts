@@ -2,6 +2,7 @@ import { g } from "../global/declare";
 import { initAPI } from "./api/api-init";
 import { middlewares } from "./middleware";
 import type { WSProp } from "./ws";
+import { serverWSReceiveMsg } from "./ws/on-message";
 
 export const create = () => {
   initAPI();
@@ -31,7 +32,11 @@ export const create = () => {
       close(ws, code, reason) {
         g.client.all.delete(ws);
       },
-      message(ws, message) {},
+      message(ws, message) {
+        if (message instanceof Buffer) {
+          serverWSReceiveMsg(ws, message);
+        }
+      },
     },
   });
   g.log.info(`Started [${g.mode}] http://localhost:4550`);

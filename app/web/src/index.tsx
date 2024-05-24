@@ -11,10 +11,10 @@ const Provider = GlobalContext.Provider;
 const el = document.getElementById("root");
 
 if (el) {
-  initWS();
   const cur = new URL(w.basehost || location.href);
   const base_url = `${cur.protocol}//${cur.host}`;
   initWindow(base_url);
+  initWS();
 
   const root = createRoot(el);
   const Root = () => {

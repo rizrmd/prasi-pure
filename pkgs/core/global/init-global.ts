@@ -1,13 +1,19 @@
-import type { ServerWebSocket } from "bun";
+import { $, type ServerWebSocket } from "bun";
 import { PrismaClient } from "db";
 import moment from "moment";
 import type { WSProp } from "../server/ws";
 import { g } from "./declare";
+import { dir } from "../bundler/utils/dir";
 
-export const initGlobal = () => {
+export const initGlobal = async () => {
   g.init = true;
   g.mode = "dev";
-  g.db = new PrismaClient();
+  try {
+    g.db = new PrismaClient();
+  } catch (e) {
+    await $`bun prisma generate`.cwd(dir.path("app/db"));
+    g.db = new PrismaClient();
+  }
   g.log = {
     info: (...props: any[]) => {
       const str = props

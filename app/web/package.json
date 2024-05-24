@@ -1,6 +1,7 @@
 {
   "name": "web",
   "dependencies": {
+    "@bugsnag/cuid": "^3.1.1",
     "@hookform/resolvers": "^3.4.2",
     "@jsonjoy.com/json-pack": "^1.0.4",
     "@radix-ui/react-dialog": "^1.0.5",
@@ -30,6 +31,7 @@
     "resizable": "^1.2.1",
     "shadcn-ui": "^0.8.0",
     "smart-layout": "^1.4.9",
+    "srv": "workspace:*",
     "styled-components": "^6.1.11",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",

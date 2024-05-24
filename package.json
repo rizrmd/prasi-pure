@@ -13,7 +13,10 @@
     "prep": "bun run pkgs/core/bundler/prep.ts"
   },
   "devDependencies": {
-    "@types/bun": "^1.1.1"
+    "@types/bun": "^1.1.1",
+    "patch-package": "^8.0.0",
+    "patcheer": "^1.0.5",
+    "postinstall-postinstall": "^2.1.0"
   },
-  "dependencies": { "moment": "^2.30.1" }
+  "dependencies": {}
 }

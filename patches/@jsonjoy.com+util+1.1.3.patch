@@ -1,0 +1,19 @@
+diff --git a/node_modules/@jsonjoy.com/util/lib/buffers/Writer.js b/node_modules/@jsonjoy.com/util/lib/buffers/Writer.js
+index 562e2c1..e165d89 100644
+--- a/node_modules/@jsonjoy.com/util/lib/buffers/Writer.js
++++ b/node_modules/@jsonjoy.com/util/lib/buffers/Writer.js
+@@ -142,12 +142,8 @@ class Writer {
+         const maxLength = str.length * 4;
+         if (maxLength < 168)
+             return this.utf8Native(str);
+-        if (utf8Write) {
+-            const writeLength = utf8Write.call(this.uint8, str, this.x, maxLength);
+-            this.x += writeLength;
+-            return writeLength;
+-        }
+-        else if (from) {
++      
++        if (from) {
+             const uint8 = this.uint8;
+             const offset = uint8.byteOffset + this.x;
+             const buf = from(uint8.buffer).subarray(offset, offset + maxLength);

@@ -3,6 +3,7 @@ import { useUI } from "@/globals/ui";
 import { PCodePopup } from "@parts/code/popup";
 import { PMenu } from "@parts/menu";
 import { PMosaic } from "@parts/mosaic";
+import { call } from "@ws/call";
 import { useEffect } from "react";
 import { validate } from "uuid";
 
@@ -14,6 +15,7 @@ export default {
     if (!session.user) {
       location.href = "/login";
     }
+
     useEffect(() => {
       if (!validate(params.id_site)) {
         _db.site
@@ -29,6 +31,9 @@ export default {
         return null;
       } else {
         localStorage.prasi_sid = params.id_site;
+        call.site_load(params.id_site).then((res) => {
+          console.log(res);
+        });
       }
     }, []);
 

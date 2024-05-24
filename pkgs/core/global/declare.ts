@@ -41,9 +41,21 @@ export const g = (global as any)._prasi_internal as unknown as {
       string,
       { modified: number; raw?: Uint8Array; br?: Uint8Array; gz?: Uint8Array }
     >;
+    prasi: {
+      site: Record<
+        string,
+        {
+          id: string;
+          name: string;
+          domain: string;
+          config?: { api_url?: string };
+        }
+      >;
+    };
   };
   client: {
     all: Set<ServerWebSocket<WSProp>>;
+    sites: Record<string, Set<ServerWebSocket<WSProp>>>;
   };
 };
 

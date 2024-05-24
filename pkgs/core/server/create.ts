@@ -31,6 +31,9 @@ export const create = () => {
       },
       close(ws, code, reason) {
         g.client.all.delete(ws);
+        for (const list of Object.values(g.client.sites)) {
+          if (list.has(ws)) list.delete(ws);
+        }
       },
       message(ws, message) {
         if (message instanceof Buffer) {

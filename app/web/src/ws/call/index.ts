@@ -4,6 +4,7 @@ import { MsgPackEncoder } from "@jsonjoy.com/json-pack/lib/msgpack/MsgPackEncode
 import { waitUntil } from "@/lib/wait-until";
 import cuid from "@bugsnag/cuid";
 const encoder = new MsgPackEncoder();
+
 export const call = new Proxy<typeof wsRoutes>({} as any, {
   get(target, p, receiver) {
     const ws = w.ws;
@@ -15,6 +16,7 @@ export const call = new Proxy<typeof wsRoutes>({} as any, {
         if (ws.readyState !== ws.OPEN) {
           await waitUntil(() => ws.readyState === ws.OPEN);
         }
+        
         return new Promise<any>((resolve) => {
           ws.send(binary);
           w.ws_pending_call[id] = resolve;

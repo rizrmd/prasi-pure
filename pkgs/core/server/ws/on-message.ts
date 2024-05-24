@@ -16,7 +16,7 @@ export const serverWSReceiveMsg = async (
 
   const route = wsRoutes[msg.fn];
   if (typeof route !== "undefined") {
-    const result = await (route as any)(...msg.args);
+    const result = await (route as any)(...[...msg.args, { ws }]);
     send(ws, "reply", { id: msg.id, result });
   }
 };

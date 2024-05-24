@@ -60,8 +60,8 @@ export const initGlobal = async () => {
   };
   console.clear();
   g.log.info("PRASI: " + (g.mode === "prod" ? "Production" : "Develepment"));
-  g.client = { all: new Set<ServerWebSocket<WSProp>>() };
-  g.cache = { web: {} };
+  g.client = { all: new Set<ServerWebSocket<WSProp>>(), sites: {} };
+  g.cache = { web: {}, prasi: { site: {} } };
 };
 
 const ansi = {

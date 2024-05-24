@@ -10,13 +10,12 @@
     "start": "bun run pkgs/core/supervisor.ts",
     "purge": "rm -rf node_modules && rm bun.lockb",
     "db": "cd app/db && bun prisma db pull && bun prisma generate",
-    "prep": "bun run pkgs/core/bundler/prep.ts"
+    "prep": "bun run pkgs/core/bundler/prep.ts",
+    "postinstall": "patch-package"
   },
   "devDependencies": {
     "@types/bun": "^1.1.1",
-    "patch-package": "^8.0.0",
-    "patcheer": "^1.0.5",
-    "postinstall-postinstall": "^2.1.0"
+    "patch-package": "^8.0.0"
   },
   "dependencies": {}
 }

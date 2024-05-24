@@ -7,14 +7,54 @@ import {
   MenubarTrigger,
 } from "@/components/ui/menubar";
 import { useUI } from "@/globals/ui";
-import { FC } from "react";
+import { FC, MouseEvent } from "react";
+import { useTheme } from "./theme/use-theme";
+import { Switch } from "@/components/ui/switch";
+import { Plus } from "lucide-react";
 
 export const PMenu: FC<{ className?: string }> = ({ className }) => {
   const ui = useUI();
-
+  const { setTheme, theme } = useTheme();
   const menus = {
     left: [
-      ["Site", [["New Site"], ["Browse"], "---", ["Deploy"]]],
+      [
+        "Site",
+        [
+          ["New Site"],
+          ["Browse"],
+          "---",
+          ["Deploy"],
+          "---",
+          [
+            <>
+              Dark Mode
+              <div className="p-absolute p-right-0 p-pr-2 p-h-full p-flex p-items-center">
+                {theme === "system" ? (
+                  "auto"
+                ) : (
+                  <Switch checked={theme === "dark"} />
+                )}
+              </div>
+            </>,
+            (e: MouseEvent<HTMLDivElement>) => {
+              e.preventDefault();
+              e.stopPropagation();
+              if (theme === "dark") setTheme("system");
+              else if (theme === "system") setTheme("light");
+              else setTheme("dark");
+            },
+          ],
+          [
+            "Logout",
+            () => {
+              if (confirm("Are you sure ?")) {
+                localStorage.clear();
+                location.href = "/login";
+              }
+            },
+          ],
+        ],
+      ],
       [
         "Code",
         () => {
@@ -23,7 +63,7 @@ export const PMenu: FC<{ className?: string }> = ({ className }) => {
         },
       ],
     ],
-    mid: [["Add"]],
+    mid: [[<Plus size={12} />]],
     right: [["Preview"]],
   };
 
@@ -59,9 +99,9 @@ const mapMenu = (menu: any, idx: number) => {
         <MenubarContent>
           {child_or_click.map((e, idx) => {
             if (typeof e === "string") return <MenubarSeparator key={idx} />;
-            const [label] = e as [string];
+            const [label, on_click] = e as [string, () => void];
 
-            return <MenubarItem>{label}</MenubarItem>;
+            return <MenubarItem onClick={on_click}>{label}</MenubarItem>;
           })}
         </MenubarContent>
       )}

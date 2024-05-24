@@ -36,7 +36,7 @@ const MenubarTrigger = React.forwardRef<
   <MenubarPrimitive.Trigger
     ref={ref}
     className={cn(
-      "p-flex p-space-x-1 p-cursor-default p-select-none p-items-center p-rounded-sm p-px-3 p-py-1.5 p-text-sm p-font-medium p-outline-none focus:p-bg-accent focus:p-text-accent-foreground data-[state=open]:p-bg-accent data-[state=open]:p-text-accent-foreground p-cursor-pointer",
+      "p-flex p-space-x-1 p-select-none p-items-center p-rounded-sm p-px-3 p-py-1.5 p-text-sm p-font-medium p-outline-none focus:p-bg-accent focus:p-text-accent-foreground data-[state=open]:p-bg-accent data-[state=open]:p-text-accent-foreground p-cursor-pointer",
       className
     )}
     {...props}
@@ -114,7 +114,7 @@ const MenubarItem = React.forwardRef<
   <MenubarPrimitive.Item
     ref={ref}
     className={cn(
-      "p-relative p-flex p-cursor-default p-select-none p-items-center p-rounded-sm p-px-2 p-py-1.5 p-text-sm p-outline-none focus:p-bg-accent focus:p-text-accent-foreground data-[disabled]:p-pointer-events-none data-[disabled]:p-opacity-50 p-cursor-pointer",
+      "p-relative p-flex p-select-none p-items-center p-rounded-sm p-px-2 p-py-1.5 p-text-sm p-outline-none focus:p-bg-accent focus:p-text-accent-foreground data-[disabled]:p-pointer-events-none data-[disabled]:p-opacity-50 p-cursor-pointer",
       inset && "p-pl-8",
       className
     )}

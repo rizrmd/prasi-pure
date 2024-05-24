@@ -88,7 +88,7 @@ export const fetchViaProxy = async (
         try {
           return JSON.parse(raw, replacer);
         } catch (e) {
-          return raw;
+          throw new Error(raw)
         }
       }
     }
@@ -118,3 +118,4 @@ const replacer = (key: string, value: string) => {
   }
   return value;
 };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIiJdLCJtYXBwaW5ncyI6IkEifQ==

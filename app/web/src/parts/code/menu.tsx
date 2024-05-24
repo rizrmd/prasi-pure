@@ -10,7 +10,7 @@ export const PCodeMenu: FC<{ className?: string }> = ({ className }) => {
   const ui = useUI();
 
   return (
-    <Menubar className={cn("p-rounded-t-lg")}>
+    <Menubar className={cn("p-rounded-t-md")}>
       <MenubarMenu>
         <Label className="p-mr-2 p-cursor-pointer">
           <Switch />

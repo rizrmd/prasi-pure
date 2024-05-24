@@ -31,11 +31,11 @@ export const bundle = async () => {
 
   g.bundler.tailwind = {
     proc: spawn({
-      cmd: `bun tailwindcss -w -m -i src/index.css -o public/index.css`.split(
+      cmd: `bun tailwindcss -w -m -i src/index.css -o public/prasi.css`.split(
         " "
       ),
       cwd: dir.path("app/web"),
-      stdio: ["ignore", "ignore", "ignore"],
+      stdio: ["inherit", "ignore", "ignore"],
     }),
   };
 

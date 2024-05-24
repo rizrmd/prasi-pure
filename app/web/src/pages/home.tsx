@@ -7,6 +7,21 @@ export default {
   page: () => {
     if (!session.user) {
       location.href = "/login";
+    } else {
+      if (localStorage.prasi_sid) {
+        location.href = "/ed/" + localStorage.prasi_sid;
+      } else {
+        _db.site
+          .findFirst({
+            where: {
+              id_user: session.user.id,
+            },
+            select: { id: true },
+          })
+          .then((res) => {
+            location.href = "/ed/" + res.id;
+          });
+      }
     }
 
     return (

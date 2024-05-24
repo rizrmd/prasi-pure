@@ -1,6 +1,6 @@
 import hash_sum from "hash-sum";
-import { fetchViaProxy } from "./proxy";
 import pako from "pako";
+import { fetchViaProxy } from "./proxy";
 
 export const dbProxy = (dburl: string) => {
   const name = "";
@@ -10,76 +10,95 @@ export const dbProxy = (dburl: string) => {
       get(_, table: string) {
         if (table === "_batch") {
           return {
-            // pancingan ini table batch
             update: async (batch: any) => {
-              return fetchSendDb(
-                {
-                  name,
-                  action: "batch_update",
-                  table: "",
-                  params: { batch },
-                },
-                dburl
-              );
+              try {
+                return fetchSendDb(
+                  {
+                    name,
+                    action: "batch_update",
+                    table: "",
+                    params: { batch },
+                  },
+                  dburl
+                );
+              } catch (e) {
+                throw new Error(e.message);
+              }
             },
           };
         }
         if (table === "_schema") {
           return {
             tables: async () => {
-              return fetchSendDb(
-                {
-                  name,
-                  action: "schema_tables",
-                  table: "",
-                  params: [],
-                },
-                dburl
-              );
+              try {
+                return fetchSendDb(
+                  {
+                    name,
+                    action: "schema_tables",
+                    table: "",
+                    params: [],
+                  },
+                  dburl
+                );
+              } catch (e) {
+                throw new Error(e.message);
+              }
             },
             columns: async (table: string) => {
-              return fetchSendDb(
-                {
-                  name,
-                  action: "schema_columns",
-                  table,
-                  params: [],
-                },
-                dburl
-              );
+              try {
+                return fetchSendDb(
+                  {
+                    name,
+                    action: "schema_columns",
+                    table,
+                    params: [],
+                  },
+                  dburl
+                );
+              } catch (e) {
+                throw new Error(e.message);
+              }
             },
             rels: async (table: string) => {
-              return fetchSendDb(
-                {
-                  name,
-                  action: "schema_rels",
-                  table,
-                  params: [],
-                },
-                dburl
-              );
+              try {
+                return await fetchSendDb(
+                  {
+                    name,
+                    action: "schema_rels",
+                    table,
+                    params: [],
+                  },
+                  dburl
+                );
+              } catch (e) {
+                throw new Error(e.message);
+              }
             },
           };
         }
 
         if (table.startsWith("$")) {
-          return (...params: any[]) => {
+          return async (...params: any[]) => {
             const bytes = pako.gzip(JSON.stringify(params));
 
-            return fetchSendDb(
-              {
-                name,
-                action: "query",
-                table,
-                params: btoa(
-                  bytes.reduce(
-                    (acc, current) => acc + String.fromCharCode(current),
-                    ""
-                  )
-                ),
-              },
-              dburl
-            );
+            try {
+              return await fetchSendDb(
+                {
+                  name,
+                  action: "query",
+                  table,
+                  params: btoa(
+                    bytes.reduce(
+                      (acc, current) => acc + String.fromCharCode(current),
+                      ""
+                    )
+                  ),
+                },
+                dburl
+              );
+            } catch (e) {
+              throw new Error(e.message);
+            }
           };
         }
 
@@ -92,15 +111,19 @@ export const dbProxy = (dburl: string) => {
                   table = action;
                   action = "query";
                 }
-                return await fetchSendDb(
-                  {
-                    name,
-                    action,
-                    table,
-                    params,
-                  },
-                  dburl
-                );
+                try {
+                  return await fetchSendDb(
+                    {
+                      name,
+                      action,
+                      table,
+                      params,
+                    },
+                    dburl
+                  );
+                } catch (e) {
+                  throw new Error(e.message);
+                }
               };
             },
           }
@@ -116,35 +139,33 @@ const cachedQueryResult: Record<
 > = {};
 
 export const fetchSendDb = async (params: any, dburl: string) => {
-  try {
-    const base = new URL(dburl);
-    base.pathname = `/_dbs`;
-    if (params.table) {
-      base.pathname += `/${params.table}`;
-    }
-    const url = base.toString();
+  const base = new URL(dburl);
+  base.pathname = `/_dbs`;
+  if (params.table) {
+    base.pathname += `/${params.table}`;
+  }
+  const url = base.toString();
 
-    if (typeof localStorage !== "undefined" && localStorage.mlsid) {
-      params.mlsid = localStorage.mlsid;
-    }
+  if (typeof localStorage !== "undefined" && localStorage.mlsid) {
+    params.mlsid = localStorage.mlsid;
+  }
 
-    const hsum = hash_sum(params);
-    const cached = cachedQueryResult[hsum];
+  const hsum = hash_sum(params);
+  const cached = cachedQueryResult[hsum];
 
-    if (!cached || (cached && Date.now() - cached.timestamp > 1000)) {
-      cachedQueryResult[hsum] = {
-        timestamp: Date.now(),
-        promise: fetchViaProxy(url, params, {
-          "content-type": "application/json",
-        }),
-        result: null,
-      };
+  if (!cached || (cached && Date.now() - cached.timestamp > 1000)) {
+    cachedQueryResult[hsum] = {
+      timestamp: Date.now(),
+      promise: fetchViaProxy(url, params, {
+        "content-type": "application/json",
+      }),
+      result: null,
+    };
 
-      const result = await cachedQueryResult[hsum].promise;
-      cachedQueryResult[hsum].result = result;
-      return result;
-    }
+    const result = await cachedQueryResult[hsum].promise;
+    cachedQueryResult[hsum].result = result;
+    return result;
+  }
 
-    return await cached.promise;
-  } catch (e) {}
+  return await cached.promise;
 };

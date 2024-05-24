@@ -2,25 +2,23 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { argon2id, argon2Verify } from "argon2-wasm-edge";
 
 const formSchema = z.object({
   username: z.string().min(2, {
@@ -34,11 +32,15 @@ const formSchema = z.object({
 export default {
   url: "/login",
   page: () => {
+    if (localStorage.prasi_uid) {
+      location.href = "/ed";
+    }
+
     const form = useForm<z.infer<typeof formSchema>>({
       resolver: zodResolver(formSchema),
       defaultValues: {
         username: "",
-        password: ""
+        password: "",
       },
     });
 
@@ -46,7 +48,18 @@ export default {
       const res = await _db.user.findFirst({
         where: { username: values.username },
       });
-      console.log(res);
+      if (res) {
+        const valid = await argon2Verify({
+          hash: res.password,
+          password: values.password,
+        });
+        if (valid) {
+          localStorage.prasi_uid = res.id;
+          location.href = "/ed";
+          return;
+        }
+      }
+      alert("Invalid username/password");
     }
 
     return (
@@ -65,7 +78,7 @@ export default {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl>
-                        <Input placeholder="username" {...field} />
+                        <Input {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -79,11 +92,7 @@ export default {
                     <FormItem>
                       <FormLabel>Password</FormLabel>
                       <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="password"
-                          type="password"
-                        />
+                        <Input {...field} type="password" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
